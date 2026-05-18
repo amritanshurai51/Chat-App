@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background: #0f0f13;
+}
+
+body {
+  font-family: 'Sora', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #e0e0e0;
+}
+
+.app-loading {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 0.9rem;
+  background: #0f0f13;
+  font-family: 'Sora', sans-serif;
+}
