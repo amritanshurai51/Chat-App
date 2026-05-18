@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
+import { SERVER_URL } from '../config';
 
 const SocketContext = createContext(null);
 
@@ -20,7 +21,7 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    socketRef.current = io('http://localhost:5000', {
+    socketRef.current = io(SERVER_URL || undefined, {
       auth: { token },
       transports: ['websocket']
     });

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import './Sidebar.css';
@@ -18,7 +18,7 @@ export default function Sidebar({ rooms, selectedRoom, onSelectRoom, onRoomCreat
     setCreating(true);
     setError('');
     try {
-      const res = await axios.post('/api/rooms', newRoom);
+      const res = await api.post('/rooms', newRoom);
       onRoomCreated(res.data);
       setNewRoom({ name: '', description: '' });
       setShowCreate(false);

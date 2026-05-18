@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import './ChatPage.css';
@@ -10,7 +10,7 @@ export default function ChatPage() {
 
   const loadRooms = async () => {
     try {
-      const res = await axios.get('/api/rooms');
+      const res = await api.get('/rooms');
       setRooms(res.data);
       // Select first room by default
       if (res.data.length > 0 && !selectedRoom) {

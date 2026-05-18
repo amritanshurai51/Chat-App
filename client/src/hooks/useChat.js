@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,7 +15,7 @@ export const useChat = (roomId) => {
   useEffect(() => {
     if (!roomId) return;
     setLoading(true);
-    axios.get(`/api/messages/${roomId}`)
+    api.get(`/messages/${roomId}`)
       .then(res => setMessages(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
