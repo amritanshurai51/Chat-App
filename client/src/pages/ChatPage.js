@@ -7,6 +7,7 @@ import './ChatPage.css';
 export default function ChatPage() {
   const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const loadRooms = async () => {
     try {
@@ -28,15 +29,38 @@ export default function ChatPage() {
   const handleRoomCreated = (room) => {
     setRooms(prev => [room, ...prev]);
     setSelectedRoom(room);
+    setSidebarOpen(false);
+  };
+
+  const handleSelectRoom = (room) => {
+    setSelectedRoom(room);
+    setSidebarOpen(false);
   };
 
   return (
     <div className="chat-layout">
+      <button
+        className="mobile-sidebar-toggle"
+        type="button"
+        onClick={() => setSidebarOpen(true)}
+      >
+        Rooms
+      </button>
+      {sidebarOpen && (
+        <button
+          className="mobile-sidebar-backdrop"
+          type="button"
+          aria-label="Close rooms panel"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       <Sidebar
         rooms={rooms}
         selectedRoom={selectedRoom}
-        onSelectRoom={setSelectedRoom}
+        onSelectRoom={handleSelectRoom}
         onRoomCreated={handleRoomCreated}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
       <main className="chat-main">
         {selectedRoom ? (

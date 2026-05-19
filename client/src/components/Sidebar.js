@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import './Sidebar.css';
 
-export default function Sidebar({ rooms, selectedRoom, onSelectRoom, onRoomCreated }) {
+export default function Sidebar({ rooms, selectedRoom, onSelectRoom, onRoomCreated, isOpen, onClose }) {
   const { user, logout } = useAuth();
   const { onlineUsers, connected } = useSocket();
   const [showCreate, setShowCreate] = useState(false);
@@ -22,6 +22,7 @@ export default function Sidebar({ rooms, selectedRoom, onSelectRoom, onRoomCreat
       onRoomCreated(res.data);
       setNewRoom({ name: '', description: '' });
       setShowCreate(false);
+      onClose?.();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create room');
     } finally {
@@ -32,7 +33,7 @@ export default function Sidebar({ rooms, selectedRoom, onSelectRoom, onRoomCreat
   const getInitials = (name) => name?.slice(0, 2).toUpperCase() || '??';
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
       {/* User profile */}
       <div className="sidebar-profile">
         <div className="avatar">{getInitials(user?.username)}</div>
@@ -42,13 +43,14 @@ export default function Sidebar({ rooms, selectedRoom, onSelectRoom, onRoomCreat
             {connected ? 'Online' : 'Connecting...'}
           </span>
         </div>
-        <button className="logout-btn" onClick={logout} title="Logout">⏻</button>
+        <button type="button" className="sidebar-close-btn" onClick={onClose} title="Close rooms panel">✕</button>
+        <button type="button" className="logout-btn" onClick={logout} title="Logout">⏻</button>
       </div>
 
       {/* Rooms header */}
       <div className="sidebar-section-header">
         <span>Rooms</span>
-        <button className="add-room-btn" onClick={() => setShowCreate(!showCreate)}>+</button>
+        <button type="button" className="add-room-btn" onClick={() => setShowCreate(!showCreate)}>+</button>
       </div>
 
       {/* Create room form */}

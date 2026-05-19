@@ -144,3 +144,39 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .auth-page {
+    padding: 0.85rem;
+    align-items: stretch;
+  }
+
+  .auth-card {
+    margin: auto 0;
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+    max-width: none;
+  }
+
+  .auth-logo {
+    margin-bottom: 1.5rem;
+  }
+
+  .logo-icon {
+    font-size: 2.1rem;
+  }
+
+  .auth-logo h1 {
+    font-size: 1.35rem;
+  }
+
+  .auth-logo p {
+    font-size: 0.8rem;
+  }
+
+  .auth-tabs button,
+  .form-group input,
+  .auth-btn {
+    font-size: 0.9rem;
+  }
+}
