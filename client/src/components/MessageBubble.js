@@ -28,8 +28,7 @@ export default function MessageBubble({ message, isOwn, showHeader }) {
         <div
           className="msg-avatar"
           style={{
-            background: getAvatarColor(message.sender?.username),
-            visibility: showHeader ? 'visible' : 'hidden'
+            background: getAvatarColor(message.sender?.username)
           }}
         >
           {getInitials(message.sender?.username)}
@@ -57,8 +56,7 @@ export default function MessageBubble({ message, isOwn, showHeader }) {
         <div
           className="msg-avatar"
           style={{
-            background: getAvatarColor(message.sender?.username),
-            visibility: showHeader ? 'visible' : 'hidden'
+            background: getAvatarColor(message.sender?.username)
           }}
         >
           {getInitials(message.sender?.username)}
