@@ -11,7 +11,7 @@ const getConfiguredServerUrl = () => {
     }
   }
 
-  return '';
+  return 'https://chat-app-wq7h.onrender.com/api/';
 };
 
 export const SERVER_URL = getConfiguredServerUrl();
