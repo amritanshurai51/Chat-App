@@ -13,7 +13,7 @@ const getAvatarColor = (name) => {
   return colors[i];
 };
 
-export default function MessageBubble({ message, isOwn, showHeader }) {
+export default function MessageBubble({ message, isOwn, showHeader, onDelete }) {
   if (message.type === 'system') {
     return (
       <div className="system-message">
@@ -43,8 +43,21 @@ export default function MessageBubble({ message, isOwn, showHeader }) {
             <span className="msg-time">{formatTime(message.createdAt)}</span>
           </div>
         )}
-        <div className={`message-bubble ${isOwn ? 'bubble-own' : 'bubble-other'}`}>
-          {message.content}
+        <div className="message-bubble-wrap">
+          <div className={`message-bubble ${isOwn ? 'bubble-own' : 'bubble-other'}`}>
+            {message.content}
+          </div>
+          {isOwn && message._id && (
+            <button
+              type="button"
+              className="delete-message-btn"
+              onClick={() => onDelete?.(message._id)}
+              aria-label="Delete message"
+              title="Delete message"
+            >
+              Delete
+            </button>
+          )}
         </div>
         {showHeader && isOwn && (
           <div className="message-header own-header">

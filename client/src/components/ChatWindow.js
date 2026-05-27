@@ -4,27 +4,77 @@ import { useChat } from '../hooks/useChat';
 import MessageBubble from './MessageBubble';
 import './ChatWindow.css';
 
+const EMOJI_OPTIONS = [
+  '😀', '😂', '😊', '😍', '🥳', '😎',
+  '🤔', '😭', '😡', '👍', '👏', '🙏',
+  '🔥', '🎉', '❤️', '💯', '😅', '🤝'
+];
+
 export default function ChatWindow({ room }) {
   const { user } = useAuth();
-  const { messages, typingUsers, loading, sendMessage, handleTyping } = useChat(room._id);
+  const { messages, typingUsers, loading, sendMessage, deleteMessage, handleTyping } = useChat(room._id);
   const [input, setInput] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const bottomRef = useRef(null);
+  const textareaRef = useRef(null);
+  const emojiPickerRef = useRef(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (!showEmojiPicker) return undefined;
+
+    const handleClickOutside = (event) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target)
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showEmojiPicker]);
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
     sendMessage(input);
     setInput('');
+    setShowEmojiPicker(false);
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       handleSend(e);
     }
+  };
+
+  const insertEmoji = (emoji) => {
+    const textarea = textareaRef.current;
+
+    if (!textarea) {
+      setInput((current) => `${current}${emoji}`);
+      setShowEmojiPicker(false);
+      return;
+    }
+
+    const start = textarea.selectionStart ?? input.length;
+    const end = textarea.selectionEnd ?? input.length;
+    const nextValue = `${input.slice(0, start)}${emoji}${input.slice(end)}`;
+
+    setInput(nextValue);
+    handleTyping();
+    setShowEmojiPicker(false);
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+      const cursorPosition = start + emoji.length;
+      textarea.setSelectionRange(cursorPosition, cursorPosition);
+    });
   };
 
   return (
@@ -70,6 +120,7 @@ export default function ChatWindow({ room }) {
               message={msg}
               isOwn={msg.sender?._id === user._id}
               showHeader={isFirstInGroup}
+              onDelete={deleteMessage}
             />
           );
         })}
@@ -91,7 +142,36 @@ export default function ChatWindow({ room }) {
       {/* Input */}
       <form className="chat-input-form" onSubmit={handleSend}>
         <div className="chat-input-wrapper">
+          <div className="emoji-picker-container" ref={emojiPickerRef}>
+            <button
+              type="button"
+              className={`emoji-toggle-btn ${showEmojiPicker ? 'active' : ''}`}
+              onClick={() => setShowEmojiPicker((current) => !current)}
+              aria-label="Open emoji picker"
+              aria-expanded={showEmojiPicker}
+            >
+              🙂
+            </button>
+
+            {showEmojiPicker && (
+              <div className="emoji-picker" role="dialog" aria-label="Emoji picker">
+                {EMOJI_OPTIONS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    className="emoji-option"
+                    onClick={() => insertEmoji(emoji)}
+                    aria-label={`Insert ${emoji}`}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <textarea
+            ref={textareaRef}
             className="chat-input"
             value={input}
             onChange={e => { setInput(e.target.value); handleTyping(); }}

@@ -99,6 +99,31 @@ const socketHandler = (io) => {
       }
     });
 
+    // --- DELETE MESSAGE ---
+    socket.on('delete_message', async ({ roomId, messageId }) => {
+      try {
+        if (!messageId || !roomId) {
+          return socket.emit('error', { message: 'Message not found' });
+        }
+
+        const message = await Message.findOne({
+          _id: messageId,
+          room: roomId,
+          sender: user._id,
+          type: 'text'
+        });
+
+        if (!message) {
+          return socket.emit('error', { message: 'You can only delete your own messages' });
+        }
+
+        await message.deleteOne();
+        io.to(roomId).emit('message_deleted', { messageId });
+      } catch (err) {
+        socket.emit('error', { message: 'Could not delete message' });
+      }
+    });
+
     // --- TYPING INDICATORS ---
     socket.on('typing_start', ({ roomId }) => {
       socket.to(roomId).emit('user_typing', { userId: user._id, username: user.username });

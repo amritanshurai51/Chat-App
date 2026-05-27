@@ -29,6 +29,9 @@ export const useChat = (roomId) => {
 
     const onMessage = (msg) => setMessages(prev => [...prev, msg]);
     const onSystem = (msg) => setMessages(prev => [...prev, msg]);
+    const onDeleteMessage = ({ messageId }) => {
+      setMessages(prev => prev.filter(msg => msg._id !== messageId));
+    };
     const onTypingStart = ({ userId, username }) => {
       if (userId === user._id) return;
       setTypingUsers(prev => [...prev.filter(u => u.userId !== userId), { userId, username }]);
@@ -39,6 +42,7 @@ export const useChat = (roomId) => {
 
     socket.on('receive_message', onMessage);
     socket.on('system_message', onSystem);
+    socket.on('message_deleted', onDeleteMessage);
     socket.on('user_typing', onTypingStart);
     socket.on('user_stop_typing', onTypingStop);
 
@@ -46,6 +50,7 @@ export const useChat = (roomId) => {
       socket.emit('leave_room', { roomId });
       socket.off('receive_message', onMessage);
       socket.off('system_message', onSystem);
+      socket.off('message_deleted', onDeleteMessage);
       socket.off('user_typing', onTypingStart);
       socket.off('user_stop_typing', onTypingStop);
       setMessages([]);
@@ -61,6 +66,11 @@ export const useChat = (roomId) => {
     clearTimeout(typingTimeoutRef.current);
   }, [socket, roomId]);
 
+  const deleteMessage = useCallback((messageId) => {
+    if (!socket || !messageId) return;
+    socket.emit('delete_message', { roomId, messageId });
+  }, [socket, roomId]);
+
   const handleTyping = useCallback(() => {
     if (!socket) return;
     socket.emit('typing_start', { roomId });
@@ -70,5 +80,5 @@ export const useChat = (roomId) => {
     }, 2000);
   }, [socket, roomId]);
 
-  return { messages, typingUsers, loading, sendMessage, handleTyping };
+  return { messages, typingUsers, loading, sendMessage, deleteMessage, handleTyping };
 };
